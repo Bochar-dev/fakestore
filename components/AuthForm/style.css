@@ -1,0 +1,35 @@
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.auth__form {
+  position: relative;
+  width: 100%;
+  max-width: 250px;
+}
+
+.auth__form-error-text {
+  position: absolute;
+  left: 50%;
+  top: -30px;
+  display: block;
+  margin: 0 0 20px 0;
+  color: #f12828;
+  text-align: center;
+  width: 100%;
+  transform: translate(-50%, -50%);
+}
+
+.auth__form-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+button.auth__form-button {
+  width: 100%;
+}

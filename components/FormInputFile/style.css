@@ -1,0 +1,7 @@
+.input-file {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.input-file:disabled {
+  opacity: 0.7;
+}

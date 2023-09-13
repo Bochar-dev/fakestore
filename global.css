@@ -1,0 +1,138 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  background-color: #121212;
+  color: #f4f4f4;
+}
+
+input,
+button,
+a,
+select,
+option,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+main {
+  flex-grow: 1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+a:hover {
+  opacity: 0.5;
+}
+
+.container {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 15px;
+  width: 100%;
+  height: 100%;
+  max-width: 1310px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+.title-h1 {
+  margin: 0 0 50px 0;
+}
+
+.title-h2 {
+  margin: 0 0 35px 0;
+}
+
+.title-h3 {
+  margin: 0 0 25px 0;
+}
+
+.title-h4 {
+  margin: 0 0 20px 0;
+}
+
+.button-add {
+  margin: 0 0 50px 0;
+}
+
+@media screen and (max-width: 575px) {
+  body {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  h4 {
+    font-size: 16px;
+  }
+
+  .title-h1 {
+    margin: 0 0 35px 0;
+  }
+
+  .title-h2 {
+    margin: 0 0 25px 0;
+  }
+
+  .title-h3 {
+    margin: 0 0 20px 0;
+  }
+
+  .title-h4 {
+    margin: 0 0 15px 0;
+  }
+
+  .button-add {
+    margin: 0 0 35px 0;
+  }
+}
