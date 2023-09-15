@@ -115,12 +115,14 @@ const EditForm = ({ productId }: EditFormProps) => {
             <div className="edit-form__fieldset">
               <label className="edit-form__label">
                 <span>Заголовок:</span>
-                <div className="input">
+                <div className="form-element">
                   {errors.title && (
-                    <span className="input__error">{errors.title.message}</span>
+                    <span className="form-element__error">
+                      {errors.title.message}
+                    </span>
                   )}
                   <input
-                    className="input__field"
+                    className="form-element__field"
                     type="text"
                     {...register("title", {
                       required: "Это обязательное поле",
@@ -131,12 +133,14 @@ const EditForm = ({ productId }: EditFormProps) => {
               </label>
               <label className="edit-form__label">
                 <span>Цена:</span>
-                <div className="input">
+                <div className="form-element">
                   {errors.price && (
-                    <span className="input__error">{errors.price.message}</span>
+                    <span className="form-element__error">
+                      {errors.price.message}
+                    </span>
                   )}
                   <input
-                    className="input__field"
+                    className="form-element__field"
                     type="text"
                     {...register("price", {
                       required: "Это обязательное поле",
@@ -147,14 +151,14 @@ const EditForm = ({ productId }: EditFormProps) => {
               </label>
               <label className="edit-form__label">
                 <span>Описание:</span>
-                <div className="textarea">
+                <div className="form-element">
                   {errors.description && (
-                    <span className="textarea__error">
+                    <span className="form-element__error">
                       {errors.description.message}
                     </span>
                   )}
                   <textarea
-                    className="textarea__field"
+                    className="form-element__field form-element__field--textarea"
                     {...register("description", {
                       required: "Это обязательное поле",
                     })}
@@ -164,9 +168,9 @@ const EditForm = ({ productId }: EditFormProps) => {
               </label>
               <label className="edit-form__label">
                 <span>Категория:</span>
-                <div className="select">
+                <div className="form-element">
                   <select
-                    className="select__field"
+                    className="form-element__field"
                     {...register("category")}
                     disabled={isLoading}
                   >
@@ -180,12 +184,14 @@ const EditForm = ({ productId }: EditFormProps) => {
               </label>
               <label className="edit-form__label">
                 <span>Фото товара:</span>
-                <div className="file">
+                <div className="form-element">
                   {errors.image && (
-                    <span className="file__error">{errors.image.message}</span>
+                    <span className="form-element__error">
+                      {errors.image.message}
+                    </span>
                   )}
                   <input
-                    className="file__field"
+                    className="form-element__field form-element__field--file"
                     type="file"
                     {...register("image")}
                     disabled={isLoading}

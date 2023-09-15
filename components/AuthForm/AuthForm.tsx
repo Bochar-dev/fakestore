@@ -46,24 +46,28 @@ const AuthForm = () => {
         {errorMessage && (
           <span className="auth__form-error-text">{errorMessage}</span>
         )}
-        <div className="input">
+        <div className="form-element">
           {errors.username && (
-            <span className="input__error">{errors.username.message}</span>
+            <span className="form-element__error">
+              {errors.username.message}
+            </span>
           )}
           <input
-            className="input__field"
+            className="form-element__field"
             type="text"
             placeholder="Введите логин"
             {...register("username", { required: "Это обязательное поле" })}
             disabled={isLoading}
           />
         </div>
-        <div className="input">
+        <div className="form-element">
           {errors?.password && (
-            <span className="input__error">{errors.password.message}</span>
+            <span className="form-element__error">
+              {errors.password.message}
+            </span>
           )}
           <input
-            className="input__field"
+            className="form-element__field"
             type="password"
             placeholder="Введите пароль"
             {...register("password", { required: "Это обязательное поле" })}
