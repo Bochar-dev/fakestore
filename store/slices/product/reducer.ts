@@ -29,7 +29,7 @@ const initialState: ProductEditState = {
 };
 
 export const ProductEditSlice = createSlice({
-  name: NameSpace.ProductEdit,
+  name: NameSpace.Product,
   initialState,
   reducers: {
     unSave: (state) => {

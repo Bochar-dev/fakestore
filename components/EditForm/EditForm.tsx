@@ -1,27 +1,27 @@
 "use client";
 
 import "./style.css";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/store";
 import Image from "next/image";
-import FormInput from "../FormInput/FormInput";
-import FormTextarea from "../FormTextarea/FormTextarea";
-import FormSelect from "../FormSelect/FormSelect";
-import FormInputFile from "../FormInputFile/FormInputFile";
-import Button from "../Button/Button";
 import { productSelector } from "@/store/slices/product/selectors";
 import { categoriesSelector } from "@/store/slices/categories/selectors";
 import { unSave } from "@/store/slices/product/reducer";
+import { fetchCategories } from "@/store/slices/categories/api-actions";
+import { Product } from "@/types/product";
+import { useForm } from "react-hook-form";
+
 import {
   fetchProductAction,
   productDeleteAction,
   productEditAction,
 } from "@/store/slices/product/api-actions";
-import { fetchCategories } from "@/store/slices/categories/api-actions";
 
 type EditFormProps = {
   productId: string;
 };
+
+type EditFormValues = Omit<Product, "id">;
 
 const EditForm = ({ productId }: EditFormProps) => {
   const dispatch = useAppDispatch();
@@ -30,54 +30,28 @@ const EditForm = ({ productId }: EditFormProps) => {
     useAppSelector(productSelector);
   const { categories } = useAppSelector(categoriesSelector);
 
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [image, setImage] = useState("");
-
   const [blobImage, setBlobImage] = useState("");
 
-  const titleChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setTitle(evt.target.value);
-    dispatch(unSave());
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<EditFormValues>();
 
-  const priceChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setPrice(evt.target.value);
-    dispatch(unSave());
-  };
+  const watchFile = watch("image");
+  const watchTitle = watch("title");
+  const watchPrice = watch("price");
+  const watchDescription = watch("description");
+  const watchCaterory = watch("category");
 
-  const descriptionChangeHandler = (evt: ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(evt.target.value);
-    dispatch(unSave());
-  };
-
-  const categoryChanheHandler = (evt: ChangeEvent<HTMLSelectElement>) => {
-    setCategory(evt.target.value);
-    dispatch(unSave());
-  };
-
-  const imageChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    const file: File | null = evt.target.files ? evt.target.files[0] : null;
-    dispatch(unSave());
-
-    if (file) {
-      const blob = URL.createObjectURL(file);
-      setBlobImage(blob);
-      setImage(evt.target.value);
-    }
-  };
-
-  const formSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
+  const formSubmitHandler = handleSubmit((data) => {
+    const fileName = Object(data.image[0]).name;
 
     const updateProduct = {
-      title: title,
-      price: price,
-      description: description,
-      image: image,
-      category: category,
+      ...data,
+      image: fileName ? fileName : product?.image,
     };
 
     dispatch(
@@ -86,7 +60,7 @@ const EditForm = ({ productId }: EditFormProps) => {
         updateProduct: updateProduct,
       })
     );
-  };
+  });
 
   const buttonDeleteClickHandler = () => {
     dispatch(productDeleteAction(productId));
@@ -99,13 +73,28 @@ const EditForm = ({ productId }: EditFormProps) => {
 
   useEffect(() => {
     if (product) {
-      setTitle(product.title);
-      setPrice(product.price);
-      setDescription(product.description);
-      setCategory(product.category);
-      setImage(product.image);
+      setValue("title", product.title);
+      setValue("price", product.price);
+      setValue("description", product.description);
+      setValue("category", product.category);
     }
-  }, [product]);
+  }, [product, setValue]);
+
+  useEffect(() => {
+    if (watchFile && watchFile.length) {
+      const file = Object(watchFile[0]);
+
+      const blob = URL.createObjectURL(file);
+
+      setBlobImage(blob);
+
+      dispatch(unSave());
+    }
+  }, [watchFile, dispatch]);
+
+  useEffect(() => {
+    dispatch(unSave());
+  }, [watchTitle, watchCaterory, watchDescription, watchPrice, dispatch]);
 
   return (
     <div className="edit">
@@ -113,6 +102,7 @@ const EditForm = ({ productId }: EditFormProps) => {
       {product && (
         <form className="edit-form" onSubmit={formSubmitHandler}>
           <div className="edit-form__left">
+            <div></div>
             <Image
               className="edit-form__image"
               src={blobImage ? blobImage : product.image}
@@ -125,58 +115,96 @@ const EditForm = ({ productId }: EditFormProps) => {
             <div className="edit-form__fieldset">
               <label className="edit-form__label">
                 <span>Заголовок:</span>
-                <FormInput
-                  value={title}
-                  onChange={titleChangeHandler}
-                  disabled={isLoading}
-                />
+                <div className="input">
+                  {errors.title && (
+                    <span className="input__error">{errors.title.message}</span>
+                  )}
+                  <input
+                    className="input__field"
+                    type="text"
+                    {...register("title", {
+                      required: "Это обязательное поле",
+                    })}
+                    disabled={isLoading}
+                  />
+                </div>
               </label>
               <label className="edit-form__label">
                 <span>Цена:</span>
-                <FormInput
-                  type="number"
-                  value={price}
-                  onChange={priceChangeHandler}
-                  disabled={isLoading}
-                />
+                <div className="input">
+                  {errors.price && (
+                    <span className="input__error">{errors.price.message}</span>
+                  )}
+                  <input
+                    className="input__field"
+                    type="text"
+                    {...register("price", {
+                      required: "Это обязательное поле",
+                    })}
+                    disabled={isLoading}
+                  />
+                </div>
               </label>
               <label className="edit-form__label">
                 <span>Описание:</span>
-                <FormTextarea
-                  value={description}
-                  onChange={descriptionChangeHandler}
-                  disabled={isLoading}
-                />
+                <div className="textarea">
+                  {errors.description && (
+                    <span className="textarea__error">
+                      {errors.description.message}
+                    </span>
+                  )}
+                  <textarea
+                    className="textarea__field"
+                    {...register("description", {
+                      required: "Это обязательное поле",
+                    })}
+                    disabled={isLoading}
+                  />
+                </div>
               </label>
               <label className="edit-form__label">
-                Категория:
-                <FormSelect
-                  options={categories}
-                  selected={category}
-                  onChange={categoryChanheHandler}
-                  disabled={isLoading}
-                />
+                <span>Категория:</span>
+                <div className="select">
+                  <select
+                    className="select__field"
+                    {...register("category")}
+                    disabled={isLoading}
+                  >
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </label>
               <label className="edit-form__label">
                 <span>Фото товара:</span>
-                <FormInputFile
-                  accept=".jpg,.png"
-                  onChange={imageChangeHandler}
-                  disabled={isLoading}
-                />
+                <div className="file">
+                  {errors.image && (
+                    <span className="file__error">{errors.image.message}</span>
+                  )}
+                  <input
+                    className="file__field"
+                    type="file"
+                    {...register("image")}
+                    disabled={isLoading}
+                  />
+                </div>
               </label>
             </div>
             <div className="edit-form__controls">
-              <Button type="submit" disabled={isLoading}>
-                {`${isSave ? "Сохранено" : "Сохранить изменения"}`}
-              </Button>
-              <Button
+              <button className="button">
+                {isLoading && "Сохроняем..."}
+                {!isLoading && isSave ? "Сохранено" : "Сохранить изменения"}
+              </button>
+              <button
+                className="button"
                 type="button"
                 onClick={buttonDeleteClickHandler}
-                disabled={isLoading}
               >
                 Удалить товар
-              </Button>
+              </button>
             </div>
           </div>
         </form>

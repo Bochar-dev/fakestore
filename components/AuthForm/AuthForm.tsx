@@ -1,43 +1,33 @@
 "use client";
 
 import "./style.css";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/store";
-import FormInput from "../FormInput/FormInput";
-import Button from "../Button/Button";
 import { authSelector } from "@/store/slices/auth/selectors";
 import { loginAction } from "@/store/slices/auth/api-actions";
 import { clearError } from "@/store/slices/auth/reducer";
 
+import { useForm } from "react-hook-form";
+import { AuthData } from "@/types/auth-data";
+
 const AuthForm = () => {
   const dispatch = useAppDispatch();
+  const { isSucces, error, isLoading } = useAppSelector(authSelector);
+
   const router = useRouter();
 
-  const { error, isLoading, isSucces } = useAppSelector(authSelector);
-
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const loginChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setLogin(evt.target.value);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AuthData>();
 
-  const passwordChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setPassword(evt.target.value);
-  };
-
-  const formSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-
-    dispatch(
-      loginAction({
-        login: login,
-        password: password,
-      })
-    );
-  };
+  const formSubmitHandler = handleSubmit((data) => {
+    dispatch(loginAction(data));
+  });
 
   useEffect(() => {
     if (isSucces) {
@@ -56,31 +46,33 @@ const AuthForm = () => {
         {errorMessage && (
           <span className="auth__form-error-text">{errorMessage}</span>
         )}
-        <div className="auth__form-inner">
-          <FormInput
-            value={login}
-            onChange={loginChangeHandler}
-            placeholder="Логин"
-            required
+        <div className="input">
+          {errors.username && (
+            <span className="input__error">{errors.username.message}</span>
+          )}
+          <input
+            className="input__field"
             type="text"
+            placeholder="Введите логин"
+            {...register("username", { required: "Это обязательное поле" })}
             disabled={isLoading}
           />
-          <FormInput
-            value={password}
-            onChange={passwordChangeHandler}
-            placeholder="Пароль"
-            required
-            type="password"
-            disabled={isLoading}
-          />
-          <Button
-            className="auth__form-button"
-            type="submit"
-            disabled={isLoading}
-          >
-            Войти
-          </Button>
         </div>
+        <div className="input">
+          {errors?.password && (
+            <span className="input__error">{errors.password.message}</span>
+          )}
+          <input
+            className="input__field"
+            type="password"
+            placeholder="Введите пароль"
+            {...register("password", { required: "Это обязательное поле" })}
+            disabled={isLoading}
+          />
+        </div>
+        <button className="button" disabled={isLoading}>
+          Войти{isLoading && "..."}
+        </button>
       </form>
     </div>
   );

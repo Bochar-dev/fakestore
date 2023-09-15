@@ -27,7 +27,7 @@
 .add__form-fielset {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 @media screen and (max-width: 991px) {

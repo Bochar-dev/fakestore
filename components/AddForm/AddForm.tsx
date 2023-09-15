@@ -1,21 +1,20 @@
 "use client";
 
 import "./style.css";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import stabImage from "@/public/static-images/stub.png";
-import FormInput from "../FormInput/FormInput";
-import FormTextarea from "../FormTextarea/FormTextarea";
-import FormSelect from "../FormSelect/FormSelect";
-import FormInputFile from "../FormInputFile/FormInputFile";
-import Button from "../Button/Button";
 import { useAppDispatch, useAppSelector } from "@/hooks/store";
 import { fetchCategories } from "@/store/slices/categories/api-actions";
 import { categoriesSelector } from "@/store/slices/categories/selectors";
 import { productAddAction } from "@/store/slices/product/api-actions";
 import { productSelector } from "@/store/slices/product/selectors";
 import { unSucces } from "@/store/slices/product/reducer";
+import { useForm } from "react-hook-form";
+import { Product } from "@/types/product";
+
+type AddFormValues = Omit<Product, "id">;
 
 const AddForm = () => {
   const dispatch = useAppDispatch();
@@ -23,55 +22,35 @@ const AddForm = () => {
   const router = useRouter();
 
   const { categories } = useAppSelector(categoriesSelector);
-  const { isSucces } = useAppSelector(productSelector);
-
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [image, setImage] = useState("");
+  const { isSucces, isLoading } = useAppSelector(productSelector);
 
   const [blobImage, setBlobImage] = useState("");
 
-  const titleChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setTitle(evt.target.value);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<AddFormValues>();
 
-  const priceChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setPrice(evt.target.value);
-  };
+  const watchFile = watch("image");
 
-  const descriptionChangeHandler = (evt: ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(evt.target.value);
-  };
-
-  const categoryChanheHandler = (evt: ChangeEvent<HTMLSelectElement>) => {
-    setCategory(evt.target.value);
-  };
-
-  const imageChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    const file: File | null = evt.target.files ? evt.target.files[0] : null;
-
-    if (file) {
-      const blob = URL.createObjectURL(file);
-      setBlobImage(blob);
-      setImage(evt.target.value);
-    }
-  };
-
-  const formSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-
-    const newProduct = {
-      title: title,
-      price: price,
-      description: description,
-      image: image,
-      category: category,
-    };
+  const formSubmitHandler = handleSubmit((data) => {
+    const fileName = Object(data.image[0]).name;
+    const newProduct = { ...data, image: fileName };
 
     dispatch(productAddAction({ ...newProduct }));
-  };
+  });
+
+  useEffect(() => {
+    if (watchFile && watchFile.length) {
+      const file = Object(watchFile[0]);
+
+      const blob = URL.createObjectURL(file);
+
+      setBlobImage(blob);
+    }
+  }, [watchFile]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -97,51 +76,83 @@ const AddForm = () => {
         <div className="add__form-fielset">
           <label className="add__form-label">
             <span>Название: </span>
-            <FormInput
-              type="text"
-              value={title}
-              onChange={titleChangeHandler}
-              required
-            />
+            <div className="input">
+              {errors.title && (
+                <span className="input__error">{errors.title.message}</span>
+              )}
+              <input
+                className="input__field"
+                type="text"
+                {...register("title", { required: "Это обязательное поле" })}
+                disabled={isLoading}
+              />
+            </div>
           </label>
           <label className="add__form-label">
             <span>Цена: </span>
-            <FormInput
-              type="number"
-              value={price}
-              onChange={priceChangeHandler}
-              required
-            />
+            <div className="input">
+              {errors.price && (
+                <span className="input__error">{errors.price.message}</span>
+              )}
+              <input
+                className="input__field"
+                type="text"
+                {...register("price", { required: "Это обязательное поле" })}
+                disabled={isLoading}
+              />
+            </div>
           </label>
           <label className="add__form-label">
             <span>Описание: </span>
-            <FormTextarea
-              value={description}
-              onChange={descriptionChangeHandler}
-              required
-            />
+            <div className="textarea">
+              {errors.description && (
+                <span className="textarea__error">
+                  {errors.description.message}
+                </span>
+              )}
+              <textarea
+                className="textarea__field"
+                {...register("description", {
+                  required: "Это обязательное поле",
+                })}
+                disabled={isLoading}
+              />
+            </div>
           </label>
           <label className="add__form-label">
             <span>Категория: </span>
-            <FormSelect
-              options={categories}
-              selected={category}
-              onChange={categoryChanheHandler}
-              required
-            />
+            <div className="select">
+              <select
+                className="select__field"
+                {...register("category")}
+                disabled={isLoading}
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </label>
           <label className="add__form-label">
             <span>Фото: </span>
-            <FormInputFile
-              accept=".jpg,.png"
-              onChange={imageChangeHandler}
-              required
-            />
+            <div className="file">
+              {errors.image && (
+                <span className="file__error">{errors.image.message}</span>
+              )}
+              <input
+                className="file__field"
+                type="file"
+                {...register("image", { required: "Это обязательное поле" })}
+                disabled={isLoading}
+              />
+            </div>
           </label>
         </div>
-        <Button className="add__form-button" type="submit">
-          Отправить
-        </Button>
+        <button className="button">
+          {isLoading ? "Добавляем..." : "добавить"}
+        </button>
       </form>
     </div>
   );

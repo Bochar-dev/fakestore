@@ -7,6 +7,6 @@ export enum AuthStatus {
 
 export enum NameSpace {
   Auth = "AUTH",
-  ProductEdit = "PRODUCT_EDIT",
+  Product = "PRODUCT",
   Categories = "CATIGORIES",
 }

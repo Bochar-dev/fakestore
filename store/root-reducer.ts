@@ -6,6 +6,6 @@ import { CategoriesSlice } from "./slices/categories/reducer";
 
 export const rootReducer = combineReducers({
   [NameSpace.Auth]: authSlice.reducer,
-  [NameSpace.ProductEdit]: ProductEditSlice.reducer,
+  [NameSpace.Product]: ProductEditSlice.reducer,
   [NameSpace.Categories]: CategoriesSlice.reducer,
 });

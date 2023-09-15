@@ -6,7 +6,7 @@ export const loginAction = createAsyncThunk<
   string,
   AuthData,
   { rejectValue: string }
->("auth/login", async ({ login, password }, { rejectWithValue }) => {
+>("auth/login", async ({ username, password }, { rejectWithValue }) => {
   try {
     const response = await fetch(`${BASE_URL}auth/login`, {
       method: "POST",
@@ -14,7 +14,7 @@ export const loginAction = createAsyncThunk<
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: login,
+        username: username,
         password: password,
       }),
     });

@@ -3,25 +3,23 @@ import { NameSpace } from "@/const";
 import { RootState } from "@/store/store";
 
 export const getIsError = (state: RootState) =>
-  state[NameSpace.ProductEdit].isError;
+  state[NameSpace.Product].isError;
 
 export const getIsLoading = (state: RootState) =>
-  state[NameSpace.ProductEdit].isLoading;
+  state[NameSpace.Product].isLoading;
 
 export const getProduct = (state: RootState) =>
-  state[NameSpace.ProductEdit].product;
+  state[NameSpace.Product].product;
 
-export const getIsSave = (state: RootState) =>
-  state[NameSpace.ProductEdit].isSave;
+export const getIsSave = (state: RootState) => state[NameSpace.Product].isSave;
 
 export const getIsDeleted = (state: RootState) =>
-  state[NameSpace.ProductEdit].isDeleted;
+  state[NameSpace.Product].isDeleted;
 
 export const getIsSuccses = (state: RootState) =>
-  state[NameSpace.ProductEdit].isSucces;
+  state[NameSpace.Product].isSucces;
 
-export const getError = (state: RootState) =>
-  state[NameSpace.ProductEdit].error;
+export const getError = (state: RootState) => state[NameSpace.Product].error;
 
 export const productSelector = createSelector(
   [
